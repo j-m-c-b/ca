@@ -1,0 +1,1 @@
+let arr = [{"barcode":"0024","name":"test product","price":"100"}]

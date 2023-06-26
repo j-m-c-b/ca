@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+        content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1, maximum-scale=1.0, user-scalable=no">
+    <title>Buscar Productos</title>
+    <script src="flexsearch.compact.js"></script>
+    <script src="../a.js"></script>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+
+        }
+
+        input {
+            background-color: grey;
+            font-size: 1.2em;
+        }
+
+        input,
+        textarea {
+
+            color: white;
+            background-color: rgb(71, 94, 129);
+        }
+
+        td,
+        th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgb(75, 74, 74);
+        }
+
+        table {
+            border-collapse: collapse;
+        }
+
+        .price {
+            text-align: right;
+        }
+
+        .closeButtom {
+            background-color: rgb(179, 41, 41);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .quantityButtom {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        thead {
+            display: block;
+        }
+
+        table {
+            display: block;
+            overflow-y: scroll;
+
+
+        }
+
+        thead th,
+        tbody td {
+            width: 70px;
+        }
+
+        #ultimate {
+            text-align: right;
+        }
+
+        button {
+            font-size: 1em;
+        }
+
+        #domTxtSearchP:focus {
+            border-color: green;
+            border-width: 4px;
+            border-style: solid;
+        }
+
+        #domTxtSearchP {
+            border-color: red;
+            border-width: 4px;
+            border-style: solid;
+        }
+
+        table {
+            font-size: 0.86em;
+
+        }
+
+        .copyButtom {
+            background-color: rgb(27, 124, 131);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .productSelected {
+            font-size: 1.1em;
+            color: #3487be;
+        }
+
+        .price {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        td {
+            font-size: 0.9em;
+        }
+
+        table {
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        .td3 {
+
+            font-size: 0.75em;
+
+        }
+
+        .td0 {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        tr:focus {
+            background-color: grey;
+        }
+
+        .td3{
+            cursor: pointer;
+        }
+        
+        .td3Selected{
+            color: rgb(108, 151, 197);
+        }
+    </style>
+</head>
+
+<body>
+
+    <input id="inTerm" type="text" name="" id="">
+
+    <button onclick="document.getElementById('inTerm').value = '';showSuggestions()">Borrar</button>
+    <div id="containerTable">
+        <table id="tableProducts">
+            <tr>
+                <th>[-]</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Barcode</th>
+
+            </tr>
+        </table>
+
+    </div>
+
+
+    <script>
+        var index = new FlexSearch({
+
+            encode: "balance",
+            tokenize: "reverse",
+            suggest: true,
+            cache: true,
+            autocomplete: false
+        });
+
+        for (var i = 0; i < arr.length; i++) {
+            index.add(i, `${arr[i].name} | <b> ${arr[i].price} </b>| ${arr[i].barcode}`);
+        }
+
+        let inTerm = document.getElementById("inTerm");
+        let tableProducts = document.getElementById("tableProducts");
+
+        inTerm.value = "";
+        inTerm.addEventListener("input", function () {
+            showSuggestions();
+
+        });
+
+        function showSuggestions() {
+            let arrIndex = index.search(inTerm.value, 22);
+            tableProducts.innerHTML =
+                `   <table id="tableProducts">
+            <tr>
+                <th>[-]</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>barcode</th>
+                
+            </tr>
+        </table>`;
+            for (let i of arrIndex) {
+
+
+                let tr = document.createElement("tr");
+                let td0 = document.createElement("td");
+                let td1 = document.createElement("td");
+                let td2 = document.createElement("td");
+                let td3 = document.createElement("td");
+
+                td0.innerText = "[-]";
+                td1.innerText = `${arr[i].name}`;
+                td2.innerText = `${formartNum(arr[i].price)}`;
+                td3.innerText = `${arr[i].barcode}`;
+
+                td0.classList.add("copyButtom");
+                td2.classList.add("price");
+
+                td0.classList.add("td0");
+                td1.classList.add("td1");
+                td2.classList.add("td2");
+                td3.classList.add("td3");
+
+
+
+                tr.appendChild(td0);
+                tr.appendChild(td1);
+                tr.appendChild(td2);
+                tr.appendChild(td3);
+
+                tableProducts.appendChild(tr);
+
+                td0.addEventListener("click", function () {
+                    let input = document.createElement("input");
+                    input.value = arr[i].barcode;
+                    document.body.appendChild(input);
+
+                    input.select();
+                    document.execCommand("Copy");
+                    input.remove();
+                    tr.classList.add("productSelected");
+
+
+
+                });
+                td3.addEventListener("click", function () {
+                    let input = document.createElement("input");
+                    input.value = "+" + arr[i].price + " " + arr[i].name;
+                    document.body.appendChild(input);
+
+                    input.select();
+                    document.execCommand("Copy");
+                    input.remove();
+                    td3.classList.add("td3Selected");
+                });
+
+            }
+        }
+
+
+        //console.log(arr);
+
+        function formartNum(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+
+            // console.log(index.search("azucar", 14));
+
+    </script>
+
+
+
+    <script>
+        // let keymoveArr = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"]; 
+        let keymoveArr = ["ArrowDown", "ArrowUp", "Enter", "+"];
+        let currentTr = 0;
+        let previus = document.createElement("tr");
+        if (true) {
+            document.addEventListener("keydown", function (event) {
+                // console.log(event);
+                if (keymoveArr.includes(event.key)) {
+
+                    event.preventDefault();
+
+
+
+
+
+
+                    if (event.key === "ArrowDown") {
+
+
+                        if (currentTr + 1 > document.getElementsByTagName("tr").length - 1) {
+                            return;
+                        }
+                        previus.style.backgroundColor = "";
+                        currentTr += 1;
+                        // previus.style.backgroundColor = "";
+                        document.getElementsByTagName("tr")[currentTr].style.backgroundColor = "darkolivegreen";
+                        document.getElementsByTagName("tr")[currentTr].scrollIntoView();
+
+                        previus = document.getElementsByTagName("tr")[currentTr];
+
+                    } else if (event.key === "ArrowUp") {
+
+                        if (currentTr - 2 < 0) {
+                            return;
+                        }
+                        previus.style.backgroundColor = "";
+                        currentTr -= 1;
+                        // previus.style.backgroundColor = "";
+                        document.getElementsByTagName("tr")[currentTr].style.backgroundColor = "darkolivegreen";
+                        document.getElementsByTagName("tr")[currentTr].scrollIntoView();
+
+                        previus = document.getElementsByTagName("tr")[currentTr];
+
+                    } else if (event.key === "Enter") {
+                        if (document.getElementsByTagName("tr")[currentTr]) {
+                            document.getElementsByTagName("tr")[currentTr].childNodes[0].click()
+                        }
+
+                    } else if (event.key === "+") {
+                        if (document.getElementsByTagName("tr")[currentTr]) {
+
+                            inTerm.focus();
+                            inTerm.scrollIntoView();
+                            currentTr = 0;
+                        }
+
+                    }
+
+                }
+            });
+        }
+
+        inTerm.focus();
+
+    </script>
+</body>
+
+</html>
